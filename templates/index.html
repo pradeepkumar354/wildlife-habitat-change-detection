@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wildlife Habitat Change Detection</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'forest-dark': '#1a3a2e',
+                        'forest-medium': '#2d5a4a',
+                        'sage': '#7d9d8f',
+                        'sand': '#e8dcc4',
+                        'cream': '#faf7f0',
+                        'earth': '#8b6f47',
+                    },
+                    fontFamily: {
+                        'display': ['"Playfair Display"', 'serif'],
+                        'body': ['"Work Sans"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Work Sans', sans-serif;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(-30deg); }
+            50% { transform: translateY(-20px) rotate(-25deg); }
+        }
+
+        @keyframes pulse-custom {
+            0%, 100% { transform: scale(1); opacity: 0.08; }
+            50% { transform: scale(1.1); opacity: 0.12; }
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        @keyframes bounce-custom {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .animate-float { animation: float 8s ease-in-out infinite; }
+        .animate-float-delayed { animation: float 6s ease-in-out infinite 1s; }
+        .animate-pulse-custom { animation: pulse-custom 10s ease-in-out infinite; }
+        .animate-shine { animation: shine 3s infinite; }
+        .animate-bounce-custom { animation: bounce-custom 2s ease-in-out infinite; }
+        .animate-fadeInDown { animation: fadeInDown 1s ease-out; }
+        .animate-fadeInUp { animation: fadeInUp 1s ease-out 0.5s both; }
+        .animate-scaleIn { animation: scaleIn 1s ease-out 0.3s both; }
+
+        .bg-decoration {
+            position: fixed;
+            pointer-events: none;
+            opacity: 0.08;
+            z-index: 0;
+        }
+
+        .leaf-1 {
+            top: 10%;
+            left: 5%;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(ellipse at center, #2d5a4a, transparent);
+            border-radius: 50% 0 50% 50%;
+            transform: rotate(-30deg);
+        }
+
+        .leaf-2 {
+            bottom: 15%;
+            right: 8%;
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(ellipse at center, #7d9d8f, transparent);
+            border-radius: 50% 50% 0 50%;
+            transform: rotate(45deg);
+        }
+
+        .circle-1 {
+            top: 50%;
+            right: 10%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, #8b6f47, transparent);
+            border-radius: 50%;
+        }
+
+        .logo-shine::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            animation: shine 3s infinite;
+        }
+
+        .btn-shine::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn-shine:hover::before {
+            left: 100%;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-cream to-sand min-h-screen overflow-x-hidden">
+    <!-- Background Decorations -->
+    <div class="bg-decoration leaf-1 animate-float"></div>
+    <div class="bg-decoration leaf-2 animate-float-delayed"></div>
+    <div class="bg-decoration circle-1 animate-pulse-custom"></div>
+
+    <!-- Main Container -->
+    <div class="relative z-10 max-w-7xl mx-auto px-6 sm:px-8 py-12 sm:py-16 min-h-screen flex flex-col items-center justify-center">
+        
+        <!-- Header -->
+        <header class="text-center mb-12 sm:mb-16 animate-fadeInDown">
+            <!-- Logo -->
+            <div class="inline-block mb-5 animate-scaleIn">
+                <div class="w-20 h-20 bg-gradient-to-br from-forest-dark to-forest-medium rounded-2xl flex items-center justify-center shadow-2xl relative overflow-hidden logo-shine">
+                    <span class="text-4xl relative z-10 drop-shadow-md">🌿</span>
+                </div>
+            </div>
+
+            <!-- Title -->
+            <h1 class="font-display text-4xl sm:text-5xl lg:text-6xl text-forest-dark mb-5 font-bold leading-tight tracking-tight">
+                Wildlife Habitat Change Detection
+            </h1>
+            
+            <!-- Subtitle -->
+            <p class="text-lg sm:text-xl text-forest-medium font-light max-w-2xl mx-auto leading-relaxed">
+                Monitor and analyze environmental changes through satellite imagery to protect our planet's precious ecosystems
+            </p>
+        </header>
+
+        <!-- Main Card -->
+        <div class="bg-white/95 backdrop-blur-md rounded-[30px] p-8 sm:p-12 lg:p-14 shadow-2xl max-w-4xl w-full border border-white/50 animate-fadeInUp">
+            
+            <!-- Feature Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
+                <div class="text-center p-6 bg-gradient-to-br from-cream to-sand rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-xl border border-sage/20">
+                    <span class="text-5xl mb-4 block animate-bounce-custom">🛰️</span>
+                    <div class="font-medium text-forest-dark text-lg mb-2">Satellite Analysis</div>
+                    <p class="text-sm text-forest-medium leading-relaxed">Compare high-resolution satellite images</p>
+                </div>
+                
+                <div class="text-center p-6 bg-gradient-to-br from-cream to-sand rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-xl border border-sage/20">
+                    <span class="text-5xl mb-4 block animate-bounce-custom" style="animation-delay: 0.2s;">🌍</span>
+                    <div class="font-medium text-forest-dark text-lg mb-2">Change Detection</div>
+                    <p class="text-sm text-forest-medium leading-relaxed">Identify habitat transformations</p>
+                </div>
+                
+                <div class="text-center p-6 bg-gradient-to-br from-cream to-sand rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-xl border border-sage/20">
+                    <span class="text-5xl mb-4 block animate-bounce-custom" style="animation-delay: 0.4s;">📊</span>
+                    <div class="font-medium text-forest-dark text-lg mb-2">Detailed Metrics</div>
+                    <p class="text-sm text-forest-medium leading-relaxed">Get precise change percentages</p>
+                </div>
+            </div>
+
+            <!-- Info Section -->
+            <div class="mb-10 p-8 bg-gradient-to-br from-sage/10 to-sand/10 rounded-2xl border-l-4 border-sage">
+                <h3 class="font-display text-2xl text-forest-dark mb-4">How It Works</h3>
+                <ul class="space-y-3">
+                    <li class="text-forest-medium pl-8 relative leading-relaxed">
+                        <span class="absolute left-0 text-sage font-bold text-xl">✓</span>
+                        Upload "before" and "after" satellite images of the same location
+                    </li>
+                    <li class="text-forest-medium pl-8 relative leading-relaxed">
+                        <span class="absolute left-0 text-sage font-bold text-xl">✓</span>
+                        Our system analyzes structural and vegetation changes
+                    </li>
+                    <li class="text-forest-medium pl-8 relative leading-relaxed">
+                        <span class="absolute left-0 text-sage font-bold text-xl">✓</span>
+                        Receive detailed visualizations and change metrics
+                    </li>
+                    <li class="text-forest-medium pl-8 relative leading-relaxed">
+                        <span class="absolute left-0 text-sage font-bold text-xl">✓</span>
+                        Support conservation efforts with data-driven insights
+                    </li>
+                </ul>
+            </div>
+
+            <!-- CTA Button -->
+            <div class="text-center">
+                <a href="{{ url_for('upload') }}" 
+                   class="inline-block px-12 py-4 bg-gradient-to-r from-forest-dark to-forest-medium text-white text-lg font-medium rounded-full transition-all duration-300 shadow-xl hover:-translate-y-1 hover:shadow-2xl relative overflow-hidden btn-shine">
+                    Start Detection
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="relative z-10 w-full bg-gradient-to-r from-forest-dark to-forest-medium py-8 mt-16">
+        <div class="max-w-7xl mx-auto px-6 sm:px-8">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                <!-- Developer Info -->
+                <div class="text-center md:text-left">
+                    <p class="text-white font-medium text-lg mb-1">Developed by Pradeep Kumar</p>
+                    <p class="text-sage text-sm">Roll No: SB230354</p>
+                </div>
+                
+                <!-- Divider -->
+                <div class="hidden md:block w-px h-12 bg-sage/30"></div>
+                
+                <!-- College Info -->
+                <div class="text-center md:text-right">
+                    <p class="text-white font-medium text-lg mb-1">St Philomena's College</p>
+                    <p class="text-sage text-sm">Mysuru, Karnataka</p>
+                </div>
+            </div>
+            
+            <!-- Copyright -->
+            <div class="text-center mt-6 pt-6 border-t border-sage/20">
+                <p class="text-sage text-sm">© 2024 Wildlife Habitat Change Detection System. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

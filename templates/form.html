@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Images - Wildlife Habitat Detection</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'forest-dark': '#1a3a2e',
+                        'forest-medium': '#2d5a4a',
+                        'sage': '#7d9d8f',
+                        'sand': '#e8dcc4',
+                        'cream': '#faf7f0',
+                        'earth': '#8b6f47',
+                        'accent': '#e67e22',
+                    },
+                    fontFamily: {
+                        'display': ['"Playfair Display"', 'serif'],
+                        'body': ['"Work Sans"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Work Sans', sans-serif;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .animate-fadeIn { animation: fadeIn 0.8s ease-out; }
+        .animate-slideUp { animation: slideUp 0.8s ease-out 0.2s both; }
+        .animate-spin-custom { animation: spin 1s linear infinite; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-cream to-sand min-h-screen">
+    <div class="min-h-screen flex flex-col">
+        <!-- Main Content -->
+        <div class="flex-grow py-10 px-5">
+            <div class="max-w-6xl mx-auto">
+                <!-- Header -->
+                <header class="text-center mb-12 animate-fadeIn">
+                    <a href="{{ url_for('index') }}" 
+                       class="inline-flex items-center gap-2 text-forest-medium text-sm mb-8 transition-all duration-300 hover:bg-sage/10 px-4 py-2 rounded-full hover:-translate-x-1">
+                        ← Back to Home
+                    </a>
+                    <h1 class="font-display text-4xl sm:text-5xl text-forest-dark mb-4 font-bold">Upload Satellite Images</h1>
+                    <p class="text-lg text-forest-medium font-light">Compare two satellite images to detect habitat changes</p>
+                </header>
+
+                <!-- Form Container -->
+                <div class="bg-white/95 backdrop-blur-md rounded-[30px] p-8 sm:p-12 shadow-2xl animate-slideUp">
+                    
+                    <!-- Instructions -->
+                    <div class="mb-10 p-8 bg-gradient-to-br from-sage/10 to-sand/10 rounded-2xl border-l-4 border-sage">
+                        <h3 class="font-display text-2xl text-forest-dark mb-4">📋 Instructions</h3>
+                        <ul class="space-y-3">
+                            <li class="text-forest-medium pl-8 relative leading-relaxed">
+                                <span class="absolute left-0 text-sage font-bold">→</span>
+                                Upload two satellite images of the same location taken at different times
+                            </li>
+                            <li class="text-forest-medium pl-8 relative leading-relaxed">
+                                <span class="absolute left-0 text-sage font-bold">→</span>
+                                Ensure images are in JPG, PNG, or similar formats
+                            </li>
+                            <li class="text-forest-medium pl-8 relative leading-relaxed">
+                                <span class="absolute left-0 text-sage font-bold">→</span>
+                                Higher resolution images provide better analysis results
+                            </li>
+                            <li class="text-forest-medium pl-8 relative leading-relaxed">
+                                <span class="absolute left-0 text-sage font-bold">→</span>
+                                Maximum file size: 16 MB per image
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Upload Form -->
+                    <form id="uploadForm" action="{{ url_for('detect') }}" method="POST" enctype="multipart/form-data">
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
+                            
+                            <!-- Before Image Upload -->
+                            <div>
+                                <label class="flex items-center gap-3 font-medium text-forest-dark mb-4 text-lg">
+                                    <span class="w-2 h-2 bg-sage rounded-full"></span>
+                                    Before Image (Earlier Time Period)
+                                </label>
+                                <div class="upload-area border-2 border-dashed border-sage rounded-2xl p-10 text-center cursor-pointer transition-all duration-300 bg-gradient-to-br from-sage/5 to-sand/5 hover:border-forest-medium hover:from-sage/10 hover:to-sand/10 hover:-translate-y-1 hover:shadow-xl relative overflow-hidden"
+                                     id="beforeUploadArea">
+                                    <span class="text-5xl mb-4 block opacity-70">🌲</span>
+                                    <div class="text-forest-medium mb-2">Click to upload or drag & drop</div>
+                                    <div class="text-sage text-sm">JPG, PNG, WEBP (Max 16MB)</div>
+                                    <input type="file" name="before_image" id="beforeImage" class="hidden" accept="image/*" required>
+                                </div>
+                                <div class="preview-container hidden mt-4" id="beforePreview">
+                                    <div class="relative">
+                                        <button type="button" 
+                                                class="absolute top-3 right-3 z-10 bg-accent text-white w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 hover:bg-[#d35400] hover:scale-110 shadow-lg text-xl"
+                                                onclick="removeFile('before')">×</button>
+                                        <img class="w-full h-52 object-cover rounded-2xl shadow-lg" id="beforePreviewImg" alt="Before preview">
+                                        <div class="text-center mt-3 text-forest-dark font-medium text-sm" id="beforeFileName"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- After Image Upload -->
+                            <div>
+                                <label class="flex items-center gap-3 font-medium text-forest-dark mb-4 text-lg">
+                                    <span class="w-2 h-2 bg-sage rounded-full"></span>
+                                    After Image (Recent Time Period)
+                                </label>
+                                <div class="upload-area border-2 border-dashed border-sage rounded-2xl p-10 text-center cursor-pointer transition-all duration-300 bg-gradient-to-br from-sage/5 to-sand/5 hover:border-forest-medium hover:from-sage/10 hover:to-sand/10 hover:-translate-y-1 hover:shadow-xl relative overflow-hidden"
+                                     id="afterUploadArea">
+                                    <span class="text-5xl mb-4 block opacity-70">🌍</span>
+                                    <div class="text-forest-medium mb-2">Click to upload or drag & drop</div>
+                                    <div class="text-sage text-sm">JPG, PNG, WEBP (Max 16MB)</div>
+                                    <input type="file" name="after_image" id="afterImage" class="hidden" accept="image/*" required>
+                                </div>
+                                <div class="preview-container hidden mt-4" id="afterPreview">
+                                    <div class="relative">
+                                        <button type="button" 
+                                                class="absolute top-3 right-3 z-10 bg-accent text-white w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 hover:bg-[#d35400] hover:scale-110 shadow-lg text-xl"
+                                                onclick="removeFile('after')">×</button>
+                                        <img class="w-full h-52 object-cover rounded-2xl shadow-lg" id="afterPreviewImg" alt="After preview">
+                                        <div class="text-center mt-3 text-forest-dark font-medium text-sm" id="afterFileName"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="text-center">
+                            <button type="submit" 
+                                    id="submitBtn" 
+                                    disabled
+                                    class="px-16 py-4 bg-gradient-to-r from-forest-dark to-forest-medium text-white text-lg font-medium rounded-full transition-all duration-300 shadow-xl hover:-translate-y-1 hover:shadow-2xl disabled:opacity-60 disabled:cursor-not-allowed disabled:from-sage disabled:to-sand relative overflow-hidden">
+                                Analyze Changes
+                            </button>
+                            <div class="loading hidden mt-6" id="loading">
+                                <div class="w-10 h-10 mx-auto mb-3 border-4 border-sand border-t-forest-dark rounded-full animate-spin-custom"></div>
+                                <p class="text-forest-medium">Analyzing images, please wait...</p>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="w-full bg-gradient-to-r from-forest-dark to-forest-medium py-8 mt-auto">
+            <div class="max-w-7xl mx-auto px-6 sm:px-8">
+                <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                    <!-- Developer Info -->
+                    <div class="text-center md:text-left">
+                        <p class="text-white font-medium text-lg mb-1">Developed by Pradeep Kumar</p>
+                        <p class="text-sage text-sm">Roll No: SB230354</p>
+                    </div>
+                    
+                    <!-- Divider -->
+                    <div class="hidden md:block w-px h-12 bg-sage/30"></div>
+                    
+                    <!-- College Info -->
+                    <div class="text-center md:text-right">
+                        <p class="text-white font-medium text-lg mb-1">St Philomena's College</p>
+                        <p class="text-sage text-sm">Mysuru, Karnataka</p>
+                    </div>
+                </div>
+                
+                <!-- Copyright -->
+                <div class="text-center mt-6 pt-6 border-t border-sage/20">
+                    <p class="text-sage text-sm">© 2024 Wildlife Habitat Change Detection System. All rights reserved.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // File upload handling
+        function setupUpload(type) {
+            const uploadArea = document.getElementById(`${type}UploadArea`);
+            const fileInput = document.getElementById(`${type}Image`);
+            const preview = document.getElementById(`${type}Preview`);
+            const previewImg = document.getElementById(`${type}PreviewImg`);
+            const fileName = document.getElementById(`${type}FileName`);
+
+            // Click to upload
+            uploadArea.addEventListener('click', () => fileInput.click());
+
+            // File selection
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    handleFile(e.target.files[0], type);
+                }
+            });
+
+            // Drag and drop
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('border-accent', 'border-solid', 'from-accent/10');
+            });
+
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('border-accent', 'border-solid', 'from-accent/10');
+            });
+
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('border-accent', 'border-solid', 'from-accent/10');
+                
+                if (e.dataTransfer.files.length > 0) {
+                    fileInput.files = e.dataTransfer.files;
+                    handleFile(e.dataTransfer.files[0], type);
+                }
+            });
+        }
+
+        function handleFile(file, type) {
+            const uploadArea = document.getElementById(`${type}UploadArea`);
+            const preview = document.getElementById(`${type}Preview`);
+            const previewImg = document.getElementById(`${type}PreviewImg`);
+            const fileName = document.getElementById(`${type}FileName`);
+
+            // Check file size (16MB)
+            if (file.size > 16 * 1024 * 1024) {
+                alert('File size must be less than 16MB');
+                return;
+            }
+
+            // Check file type
+            if (!file.type.startsWith('image/')) {
+                alert('Please upload an image file');
+                return;
+            }
+
+            // Show preview
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                previewImg.src = e.target.result;
+                fileName.textContent = file.name;
+                uploadArea.classList.add('hidden');
+                preview.classList.remove('hidden');
+                preview.classList.add('animate-fadeIn');
+                checkFormValid();
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function removeFile(type) {
+            const fileInput = document.getElementById(`${type}Image`);
+            const uploadArea = document.getElementById(`${type}UploadArea`);
+            const preview = document.getElementById(`${type}Preview`);
+
+            fileInput.value = '';
+            uploadArea.classList.remove('hidden');
+            preview.classList.add('hidden');
+            checkFormValid();
+        }
+
+        function checkFormValid() {
+            const beforeInput = document.getElementById('beforeImage');
+            const afterInput = document.getElementById('afterImage');
+            const submitBtn = document.getElementById('submitBtn');
+
+            submitBtn.disabled = !(beforeInput.files.length > 0 && afterInput.files.length > 0);
+        }
+
+        // Form submission
+        document.getElementById('uploadForm').addEventListener('submit', function(e) {
+            const loading = document.getElementById('loading');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            submitBtn.disabled = true;
+            loading.classList.remove('hidden');
+        });
+
+        // Initialize upload areas
+        setupUpload('before');
+        setupUpload('after');
+    </script>
+</body>
+</html>
